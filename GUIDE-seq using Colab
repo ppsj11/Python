@@ -1,0 +1,5 @@
+#conda 환경 설정을 위한 Caondacolab 패키지 설치
+
+!pip install -q condacolab 
+import condacolab
+condacolab.install()
