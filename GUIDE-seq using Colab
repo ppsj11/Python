@@ -1,5 +1,39 @@
-#conda 환경 설정을 위한 Caondacolab 패키지 설치
+# conda 환경 설정을 위한 Caondacolab 패키지 설치
 
-!pip install -q condacolab 
+!pip install -q condacolab   
 import condacolab
 condacolab.install()
+
+# conda 환경 설정 및 초기화
+!conda create -n guideseq python=3.8
+!conda init bash
+
+# guideseq 환경 활성화 및 확인
+!source activate guideseq && conda env list
+
+
+!git clone --recursive https://github.com/aryeelab/guideseq
+!pip install -r requirements.txt
+!python setup.py install
+!python guideseq.py -h
+
+!source activate guideseq
+
+# BWA install 및 설치 확인
+!conda install -c bioconda bwa
+!bwa
+
+# Bedtools install 및 설치 확인
+!conda install -c bioconda bedtools
+!bedtools
+
+# GUIDE-seq 분석
+!python guideseq.py all -m test_manifest.yaml
+
+# conda를 통해 NCBI Datasets 설치
+!conda install -c conda-forge ncbi-datasets-cli
+
+# Reference genome download
+!datasets download genome taxon human --reference --filename human_genome.zip
+!unzip human_genome.zip
+!cp /content/guideseq/Cas12f1/ncbi_dataset/data/GCF_000001405.40/GCF_000001405.40_GRCh38.p14_genomic.fna /content/guideseq/Cas12f1/hg38.fna
