@@ -8,17 +8,17 @@ serves as the wrapper for all guideseq pipeline
 
 """
 
-import os
-import sys
-import yaml
-import argparse
-import traceback
+import os # operating system: 운영체제에서 제공되는 여러 기능 수행 (파일 복사, 디렉터리 생성, 파일 목록 등)
+import sys # system-specific parameters and functions: 인터프리터를 제어하는 모듈
+import yaml # YAML Ain't Markup Language : 사람이 읽을 수 있는 데이터 직렬화 언어
+import argparse # 스크립트 실행시 사용자료부터 입력을 받거나, 다양한 옵션 설정시 사용
+import traceback # 오류 발생 시 상세한 오류 정보를 출력
 
 # Set up logger
-import log
-logger = log.createCustomLogger('root')
+import log # 프로그램의 실행 과정, 상태, 오류 등을 기록하기 위해 사용
+logger = log.createCustomLogger('root') # root 로거 생성
 
-from alignReads import alignReads
+from alignReads import alignReads # alignReads 모듈에서 alignReads라는 이름의 함수 또는 클래스를 가져옴
 from filterBackgroundSites import filterBackgroundSites
 from umi import demultiplex, umitag, consolidate
 from visualization import visualizeOfftargets
@@ -29,19 +29,23 @@ DEFAULT_DEMULTIPLEX_MIN_READS = 10000
 DEFAULT_WINDOW_SIZE = 25
 DEFAULT_MAX_SCORE = 7
 
-CONSOLIDATE_MIN_QUAL = 15
-CONSOLIDATE_MIN_FREQ = 0.9
+CONSOLIDATE_MIN_QUAL = 15 # 최소 품질 점수 : 15
+CONSOLIDATE_MIN_FREQ = 0.9 # 최소 빈도 : 특정 염기 또는 서열이 전체 데이터에서 90% 이상이여야 함
 
+# class : 사용자 정의 데이터 구조를 정의하는 데 사용
+# 객체: 클래스의 인스턴스로, 클래스에서 정의한 속성(데이터)과 메서드(함수)를 가지는 구체적인 실체
+# 속성: 클래스 내에서 정의된 변수로, 객체의 상태를 나타냄
+# 메서드: 클래스 내에서 정의된 함수로, 객체의 행동을 정의
 
 class GuideSeq:
 
     def __init__(self):
         pass
 
-    def parseManifest(self, manifest_path):
-        logger.info('Loading manifest...')
+    def parseManifest(self, manifest_path): # parseManifest라는 이름의 메서드 정의, self는 현재 인스턴스 참조, manifest_path는 매니페스트 파일의 경로를 나타내는 매개변수
+        logger.info('Loading manifest...') # 로깅 시스템을 사용하여 "Loading manifest..."라는 정보를 로그로 기록. 매니페스트 파일을 로드하고 있다는 상태를 나타냄
 
-        with open(manifest_path, 'r') as f:
+        with open(manifest_path, 'r') as f: # with 구문을 사용하여 manifest_path에서 파일을 읽기 모드 'r'로 오픈. with 구문은 파일을 안전하게 열고, 작업이 끝난 후 자동으로 파일을 닫아주는 역할. f는 열린 파일 개체를 참조.
             manifest_data = yaml.safe_load(f)
         
         if not "cores" in manifest_data:
