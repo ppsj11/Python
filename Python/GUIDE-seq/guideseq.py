@@ -46,10 +46,10 @@ class GuideSeq:
         logger.info('Loading manifest...') # 로깅 시스템을 사용하여 "Loading manifest..."라는 정보를 로그로 기록. 매니페스트 파일을 로드하고 있다는 상태를 나타냄
 
         with open(manifest_path, 'r') as f: # with 구문을 사용하여 manifest_path에서 파일을 읽기 모드 'r'로 오픈. with 구문은 파일을 안전하게 열고, 작업이 끝난 후 자동으로 파일을 닫아주는 역할. f는 열린 파일 개체를 참조.
-            manifest_data = yaml.safe_load(f)
+            manifest_data = yaml.safe_load(f) # yaml 모듈의 safe_load 함수를 사용하여 파일의 내용을 YAML 형식으로 파싱하고 그 결과는 manifest_data라는 변수에 저장됨. safe_load는 안전하게 YAML 데이터를 로드하는 방법으로, 외부 코드 실행을 방지함.
         
-        if not "cores" in manifest_data:
-            manifest_data['cores'] = 4
+        if not "cores" in manifest_data: # manifest_data에 "cores"라는 키가 포함되어 있는지 확인. 만약 포함되어 있지 않다면, 다음 코드를 실행함.
+            manifest_data['cores'] = 4 # 만약 "cores"키가 없다면, 기본값으로 4를 설정. 이는 manifest가 CPU 코어 수를 지정하지 않았을 경우, 기본값으로 4를 사용하독 하는 것임.
         
         # Set default tag/primer sequences if not specified
         if not "primer1" in manifest_data:
@@ -57,11 +57,11 @@ class GuideSeq:
         if not "primer2" in manifest_data:
             manifest_data['primer2'] = 'ACATATGACAACTCAATTAA'
 
-        try:
+        try: # try 블록: 예외 처리를 위해 사용. 일반적으로 프로그램 실행 중에 발생할 수 있는 오류를 사전에 처리하여, 프로그램이 비정상적으로 종료되는 것을 방지하고, 사용자에게 유용한 정보를 제공하기 위해 사용. validation.validateManifes(manifest_data) 함수를 호출.
             # Validate manifest data
-            validation.validateManifest(manifest_data)
+            validation.validateManifest(manifest_data) # manifest_data의 유효성을 검증. 만약 유효성 검증에서 오류가 발생하면, 예외를 처리할 수 있는 구조.
 
-            self.cores = manifest_data['cores']
+            self.cores = manifest_data['cores'] # 유효성 검증이 성공하면, manifest_data에서 필요한 정보를 클래스의 속성으로 할당함. 각 속성은 manifest파일에서 읽어온 값으로 초기화됨.
             self.BWA_path = manifest_data['bwa']
             self.bedtools = manifest_data['bedtools']
             self.reference_genome = manifest_data['reference_genome']
@@ -71,9 +71,9 @@ class GuideSeq:
             self.primer1 = manifest_data['primer1']
             self.primer2 = manifest_data['primer2']
 
-        except Exception as e:
-            logger.error('Incorrect or malformed manifest file. Please ensure your manifest contains all required fields.')
-            sys.exit()
+        except Exception as e: # try 블록에서 발생한 모든 예외를 포착. Exception은 모든 일반적인 예외의 기본 클래스이므로, 이 구문은 어던 종류의 예외가 발생하더라고 처리할 수 있담. e는 발생한 예외 객체를 참조함.
+            logger.error('Incorrect or malformed manifest file. Please ensure your manifest contains all required fields.') # logger 객체를 사용하여 오류 메시지를 기록. 
+            sys.exit() # 프로그램을 종료하는 명령. 비정상 종료. 사용자에게 문제를 알리고 프로그램이 계속 진행되지 않도록 함.
 
         # Allow the user to specify min reads for demultiplex if they want
         if 'demultiplex_min_reads' in manifest_data:
@@ -106,20 +106,20 @@ class GuideSeq:
 
         logger.info('Successfully loaded manifest.')
 
-    def parseManifestDemultiplex(self, manifest_path):
-        logger.info('Loading manifest for demultiplexing...')
+    def parseManifestDemultiplex(self, manifest_path): # parseManifestDemultiplex는 인스턴스 메서드로, minifest_path라는 인자를 받음.
+        logger.info('Loading manifest for demultiplexing...') # 매니페스트 파일을 로드하고 있다는 정보를 로그로 기록.
 
-        with open(manifest_path, 'r') as f:
-            manifest_data = yaml.load(f)
+        with open(manifest_path, 'r') as f: # with 구문을 사용하여 minifest_path에 있는 파일을 읽기 모드로 오픔. f는 열린 파일 객체.
+            manifest_data = yaml.load(f) # yaml.load(f)를 사용하여 파일의 내용을 파싱함. manifest_data는 YAML 데이터가 저장된 사전임.
 
-            try:
-                self.output_folder = manifest_data['output_folder']
+            try: # try 블록 내에서 매니페스트 데이터에서 필요한 필드를 가져옴.
+                self.output_folder = manifest_data['output_folder'] # manifest_data에서 각 필드 값을 각각 클래스 인스턴스의 속성으로 할당함.
                 self.undemultiplexed = manifest_data['undemultiplexed']
                 self.samples = manifest_data['samples']
 
-            except Exception as e:
-                logger.error('Incomplete or incorrect manifest file. Please ensure your manifest contains all required fields.')
-                quit()
+            except Exception as e:# 만약 위의 try 블록에서 오류가 발생하면, except 블록 실행됨.
+                logger.error('Incomplete or incorrect manifest file. Please ensure your manifest contains all required fields.') # 오류 메시지를 로그로 기록하고, 사용자에게 알림.
+                quit() # 프로그램을 종료
 
         # Allow the user to specify min reads for demultiplex if they want
         if 'demultiplex_min_reads' in manifest_data:
@@ -134,14 +134,14 @@ class GuideSeq:
         logger.info('Demultiplexing undemultiplexed files...')
 
         # Take our two barcodes and concatenate them
-        swapped_sample_barcodes = {}
-        for sample in self.samples:
+        swapped_sample_barcodes = {} # 사전 초기화. 사전에 생성된 바코드와 샘플 이름을 매핑하기 위해 사용됨.
+        for sample in self.samples: # self.samples라는 샘플 데이터 구조를 반복함. 여기서 sample은 각 샘플의 키를 나타냄.
             barcode1 = self.samples[sample]['barcode1']
-            barcode2 = self.samples[sample]['barcode2']
-            barcode = barcode1[1:8] + barcode2[1:8]
-            swapped_sample_barcodes[barcode] = sample
+            barcode2 = self.samples[sample]['barcode2'] # 각 샘플의 바코드롤 가져옴.
+            barcode = barcode1[1:8] + barcode2[1:8] # 두 barcode의 1-7번 인덱스까지 잘라낸 후 결합하여 새로운 바코드 생성. 
+            swapped_sample_barcodes[barcode] = sample # 생성된 barcode를 키로 사용하고, 해당 샘플 이름을 값으로 하여 swapped_sample_barcodes 사전에 추가함.
 
-        try:
+        try: # try 블록 내에서 demultiplex 메서드 호출.
             demultiplex.demultiplex(self.undemultiplexed['forward'],
                                     self.undemultiplexed['reverse'],
                                     self.undemultiplexed['index1'],
@@ -313,20 +313,21 @@ class GuideSeq:
                     logger.error(traceback.format_exc())
         logger.info('Finished visualizing off-target sites')
 
-def parse_args():
-    parser = argparse.ArgumentParser()
+def parse_args(): # parse_args라는 함수 정의
+    parser = argparse.ArgumentParser() # ArgumentParser 객체 생성 argparse.ArgumentParser()를 사용하여 인수 파서를 생성.
 
-    subparsers = parser.add_subparsers(description='Individual Step Commands',
-                                       help='Use this to run individual steps of the pipeline',
-                                       dest='command')
+    subparsers = parser.add_subparsers(description='Individual Step Commands', # 하위 명령어 추가. add_subparsers 메서드를 사용하여 여러 하위 명령어를 추가할 수 있는 객체를 생성.
+                                       help='Use this to run individual steps of the pipeline', # 각 하위 명령어에 대한 설명과 도움말을 설정함.
+                                       dest='command') # 하위 명령어의 이름이 args.command로 저장됨.
+    
+    # 각 하위 명령어에 대해 필요한 인수와 도움말을 추가함.
+    all_parser = subparsers.add_parser('all', help='Run all steps of the pipeline') # 모든 단계의 파이프라인을 실햄함.
+    all_parser.add_argument('--manifest', '-m', help='Specify the manifest Path', required=True) # 매니페스트 파일의 경로를 요구하는 필수 인수
+    all_parser.add_argument('--identifyAndFilter', action='store_true', default=False) # 이 플래그가 설정되면 식별 및 필터링 단계를 수행하도록 지정
+    all_parser.add_argument('--skip_demultiplex', action='store_true', default=False) # 이 플래그가 설정되면 demultiplexing 단계를 건너뜀.
 
-    all_parser = subparsers.add_parser('all', help='Run all steps of the pipeline')
-    all_parser.add_argument('--manifest', '-m', help='Specify the manifest Path', required=True)
-    all_parser.add_argument('--identifyAndFilter', action='store_true', default=False)
-    all_parser.add_argument('--skip_demultiplex', action='store_true', default=False)
-
-    demultiplex_parser = subparsers.add_parser('demultiplex', help='Demultiplex undemultiplexed FASTQ files')
-    demultiplex_parser.add_argument('--manifest', '-m', help='Specify the manifest path', required=True)
+    demultiplex_parser = subparsers.add_parser('demultiplex', help='Demultiplex undemultiplexed FASTQ files') # fastq파일을 demultiplexing 함.
+    demultiplex_parser.add_argument('--manifest', '-m', help='Specify the manifest path', required=True) # 매니페스트 파일의 경로를 요구하는 필수 인수
 
     umitag_parser = subparsers.add_parser('umitag', help='UMI tag demultiplexed FASTQ files for consolidation')
     umitag_parser.add_argument('--read1', required=True)
@@ -372,7 +373,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main(): # main이라는 함수 정의. 프로그램의 주요 실행 흐름을 담당.
     args = parse_args()
 
     if args.command == 'all':
